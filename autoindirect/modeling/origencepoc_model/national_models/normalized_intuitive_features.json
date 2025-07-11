@@ -1,0 +1,106 @@
+[
+    {
+        "name": "drop_48m_features",
+        "drop": {
+            "operation": "contains",
+            "logic": "or",
+            "keywords": [
+                "48"
+            ]
+        }
+    },
+    {
+        "name": "drop_sum_features",
+        "among": {
+            "operation": "contains",
+            "logic": "or",
+            "keywords": [
+                "trade_crdUtl",
+                "trade_months_since_openDate",
+                "trade_hc_to_cl",
+                "trade_pstDue_to_blnc",
+                "trade_pstDue_to_hc",
+                "trade_pstDue_to_cl",
+                "trade_percent_DQ",
+                "trade_percent_CO"
+            ]
+        },
+        "drop": {
+            "operation": "contains",
+            "logic": "or",
+            "keywords": [
+                "_sum"
+            ]
+        }
+    },
+    {
+        "name": "keep_only_revolving",
+        "among": {
+            "operation": "contains",
+            "logic": "or",
+            "keywords": [
+                "trade_crdUtl",
+                "trade_clAmt",
+                "trade_hc_to_cl"
+            ]
+        },
+        "keep": {
+            "operation": "contains",
+            "logic": "or",
+            "keywords": [
+                "_by_prtfType_revolving",
+                "_by_acctType_credit_card",
+                "_by_acctType_charge_card"
+            ]
+        }
+    },
+    {
+        "name": "keep_only_by_accountportfolio",
+        "among": {
+            "operation": "contains",
+            "logic": "or",
+            "keywords": [
+                "trade_pstDue_to_hc",
+                "trade_blnc_to_hc",
+                "trade_pstDue_to_cl"
+            ]
+        },
+        "keep": {
+            "operation": "contains",
+            "logic": "or",
+            "keywords": [
+                "_by_acctType",
+                "_by_prtfTyp"
+            ]
+        }
+    },
+    {
+        "name": "drop_inq_stability",
+        "drop": {
+            "operation": "contains",
+            "logic": "or",
+            "keywords": [
+                "inq_inquiry_stability_1",
+                "inq_inquiry_stability_2"
+            ]
+        }
+    },
+    {
+        "name": "drop_trade_utility",
+        "among": {
+            "operation": "contains",
+            "logic": "or",
+            "keywords": [
+                "trade"
+            ]
+        },
+        "drop": {
+            "operation": "contains",
+            "logic": "or",
+            "keywords": [
+                "_by_acctType_utility"
+            ]
+        }
+
+    }
+]

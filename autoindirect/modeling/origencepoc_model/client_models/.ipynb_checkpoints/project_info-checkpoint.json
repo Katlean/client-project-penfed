@@ -1,0 +1,9 @@
+{
+    "client_name": "origencepocv2",
+    "bureau_production": "experian",
+    "national_model_category": "standard_model_member_data",
+    "use_member_data": true,
+    "standardized_LOS_name": "LOS-CUDIRECT",
+    "product_version": 1,
+    "model_iteration_products": ["autoloan"]
+}
