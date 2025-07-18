@@ -1,0 +1,400 @@
+{
+  "data": {
+    "trade": {
+      "asset": "experian/arf7/trade.json",
+      "data": "#/home/psk/client-project-penfed/autoindirect/modeling/origencepoc_model/client_models/sample_files/trade_sampled_files.json",
+      "io_params": {
+        "drop_duplicates": true,
+        "keep_keys": "/home/psk/client-project-penfed/autoindirect/playground/psk/keep_keys.json",
+        "memory_efficient": true
+      }
+    },
+    "inq": {
+      "asset": "experian/arf7/inquiry.json",
+      "data": "#/home/psk/client-project-penfed/autoindirect/modeling/origencepoc_model/client_models/sample_files/inq_sampled_files.json",
+      "io_params": {
+        "drop_duplicates": true,
+        "keep_keys": "/home/psk/client-project-penfed/autoindirect/playground/psk/keep_keys.json",
+        "memory_efficient": true
+      }
+    },
+    "collec": {
+      "asset": "experian/arf7/collections.json",
+      "data": "#/home/psk/client-project-penfed/autoindirect/modeling/origencepoc_model/client_models/sample_files/collec_sampled_files.json",
+      "io_params": {
+        "drop_duplicates": true,
+        "keep_keys": "/home/psk/client-project-penfed/autoindirect/playground/psk/keep_keys.json",
+        "memory_efficient": true
+      }
+    },
+    "bnkr": {
+      "asset": "experian/arf7/bankruptcy.json",
+      "data": "#/home/psk/client-project-penfed/autoindirect/modeling/origencepoc_model/client_models/sample_files/bnkr_sampled_files.json",
+      "io_params": {
+        "drop_duplicates": true,
+        "keep_keys": "/home/psk/client-project-penfed/autoindirect/playground/psk/keep_keys.json",
+        "memory_efficient": true
+      }
+    },
+    "member": {
+      "asset": "experian/arf7/member.json",
+      "data": "#/home/psk/client-project-penfed/autoindirect/modeling/origencepoc_model/client_models/sample_files/member_sampled_files.json",
+      "io_params": {
+        "drop_duplicates": true,
+        "keep_keys": "/home/psk/client-project-penfed/autoindirect/playground/psk/keep_keys.json",
+        "memory_efficient": true
+      }
+    },
+    "app": {
+      "asset": {
+        "info": {
+          "key": "ZEST_KEY",
+          "app_date": "appDate"
+        },
+        "table_name": "app",
+        "table_type": "one_to_one",
+        "feature_engineering": "one_to_one"
+      },
+      "data": "#/home/psk/client-project-penfed/autoindirect/modeling/origencepoc_model/client_models/sample_files/app_sampled_files.json",
+      "io_params": {
+        "drop_duplicates": true,
+        "keep_keys": "/home/psk/client-project-penfed/autoindirect/playground/psk/keep_keys.json",
+        "memory_efficient": true
+      }
+    },
+    "target": {
+      "asset": {
+        "info": {
+          "col": "final_DQ90_m12",
+          "key": "ZEST_KEY"
+        },
+        "table_type": "target"
+      },
+      "data": "#/home/psk/client-project-penfed/autoindirect/modeling/origencepoc_model/client_models/sample_files/target_sampled_files.json",
+      "io_params": {
+        "drop_duplicates": true,
+        "keep_keys": "/home/psk/client-project-penfed/autoindirect/playground/psk/keep_keys.json",
+        "keep_features": [
+          "ZEST_KEY",
+          "final_DQ90_m12"
+        ],
+        "memory_efficient": true
+      }
+    }, 
+  "client_data": {
+      "data": "#/home/psk/client-project-penfed/autoindirect/modeling/origencepoc_model/client_models/sample_files/client_data_sampled_files.json",
+      "io_params": {
+          "drop_duplicates": true,
+          "keep_keys": "/home/psk/client-project-penfed/autoindirect/playground/psk/keep_keys.json"
+      },
+      "asset": {
+        "feature_engineering": "one_to_one",
+        "validator": "base",
+        "table_type": "app",
+        "info": {
+          "key": "ZEST_KEY",
+          "numerics": [
+            "LTV_NORM"
+          ]
+        }
+      }
+    }
+  },
+  "config": {
+    "data_split": {
+      "train": {
+        "start_date": "2020-07-01",
+        "end_date": "2022-07-01"
+      },
+      "valid": {
+        "start_date": "2022-07-01",
+        "end_date": "2023-01-01"
+      },
+      "test": {
+        "start_date": "2023-01-01",
+        "end_date": "2024-01-01"
+      }
+    },
+    "target": "final_DQ90_m12",
+    "memory_efficient": true,
+    "pipeline_factory": {
+      "name": "AutoValidPipelineFactory",
+      "transformers": [
+        {
+          "zaml_class": "LevelSelection",
+          "params": {
+            "thresh": 0.01,
+            "change_to": "Other",
+            "encoding": "onehot"
+          }
+        },
+        {
+          "zaml_class": "FillNA",
+          "params": {
+            "replace_by": -1,
+            "add_flags": false
+          }
+        },
+        {
+          "zaml_class": "CorrelationFeatureSelection",
+          "params": {
+            "corr_threshold": 0.995
+          },
+          "fit_params": {
+            "ignore_columns": [
+              "trade_months_since_openDate__max",
+              "trade_acctType__count",
+              "trade_number_DQ30_24_months__sum",
+              "trade_number_DQ60_24_months__sum",
+              "trade_number_DQ90_24_months__sum",
+              "trade_blncAmt_all_derog_accts__max",
+              "trade_blncAmt_active_accts__sum",
+              "trade_blncAmt_active_accts__sum_by_prtfType_revolving",
+              "inq_inquiries__count_by_indCode_auto_mortgage",
+              "inq_inquiries__count_by_month__max",
+              "inq_inquiries__count_by_month__mean",
+              "inq_inquiries__sum",
+              "inq_inquiries_in_last_3_months__sum",
+              "inq_inquiries_in_last_6_months__sum",
+              "inq_inquiries_in_last_9_months__sum",
+              "inq_inquiries_in_last_month__sum",
+              "inq_inquiries_in_last_year__sum",
+              "inq_months_since_INQUIRY_DATE__max",
+              "inq_months_since_INQUIRY_DATE__mean",
+              "inq_months_since_INQUIRY_DATE__min",
+              "inq_months_since_INQUIRY_DATE__sum",
+              "collec_blnc__sum",
+              "collec_months_since_collection_opened__min",
+              "collec___count",
+              "collec_ratio_paid__max",
+              "collec_ratio_paid__min",
+              "bnkr___count",
+              "bnkr___count_by_type_chapter_13_discharged",
+              "bnkr___count_by_type_chapter_13_dismissed",
+              "bnkr___count_by_type_chapter_7_discharged",
+              "bnkr___count_by_type_chapter_7_dismissed",
+              "bnkr_months_since_date_filed__max",
+              "bnkr_months_since_date_filed__mean",
+              "bnkr_months_since_date_filed__min",
+              "member_hcAmt_accts_never_dq__mean",
+              "member_hcAmt__max_by_prtfType_revolving",
+              "member_hcAmt__max_by_prtfType_installment",
+              "member_hcAmt__sum_by_prtfType_installment",
+              "member_hcAmt_accts_never_dq__max_by_prtfType_installment",
+              "member_hcAmt_accts_never_dq__max_by_prtfType_revolving",
+              "member_hcAmt_accts_opened_12m__sum_by_prtfType_installment",
+              "member_hcAmt_accts_opened_12m__sum_by_prtfType_revolving",
+              "member_hcAmt_active_accts__sum_by_prtfType_installment",
+              "member_hcAmt_active_accts__sum_by_prtfType_revolving",
+              "member_months_since_openDate__max_by_ecoa_individual",
+              "member_hcAmt_active_accts__mean_by_ecoa_individual",
+              "member_blnc_to_hc__max_by_prtfType_revolving",
+              "member_blnc_to_hc__max_by_prtfType_installment",
+              "member_blnc_to_hc_accts_never_dq__max_by_prtfType_revolving",
+              "member_blnc_to_hc_accts_never_dq__max_by_prtfType_installment",
+              "member_months_since_openDate__min",
+              "member_months_since_openDate__max",
+              "member_months_since_openDate__mean",
+              "member_number_DQ60_24_months__sum",
+              "member_number_DQ30_24_months__sum",
+              "member_number_DQ60_12_months__sum",
+              "member_number_DQ30_12_months__sum",
+              "member_number_CO_24_months__sum",
+              "member_acctType__count",
+              "member_blncAmt__sum_by_acctType_unsecure",
+              "member_blncAmt__sum_by_prtfType_revolving",
+              "member_blncAmt__sum_by_prtfType_installment"
+            ]
+          }
+        },
+        {
+          "zaml_class": "GainFeatureSelection",
+          "params": {
+            "max_features": 900,
+            "max_features_select": 300,
+            "feature_filter_threshold": -1,
+            "min_features": 100,
+            "learning_rate": 0.05,
+            "n_estimators": 500,
+            "max_depth": 3,
+            "backend_subsample": 0.5,
+            "scale_pos_weight": 2.5,
+            "colsample_bytree": 0.05,
+            "min_child_weight": 250,
+            "n_iter": null,
+            "step_size": 10,
+            "valid_method": "external"
+          },
+          "fit_params": {
+            "ignore_columns": [
+              "client_data_LTV_NORM",
+              "trade_months_since_openDate__max",
+              "trade_acctType__count",
+              "trade_number_DQ30_24_months__sum",
+              "trade_number_DQ60_24_months__sum",
+              "trade_number_DQ90_24_months__sum",
+              "trade_blncAmt_all_derog_accts__max",
+              "trade_blncAmt_active_accts__sum",
+              "trade_blncAmt_active_accts__sum_by_prtfType_revolving",
+              "inq_inquiries__count_by_indCode_auto_mortgage",
+              "inq_inquiries__count_by_month__max",
+              "inq_inquiries__count_by_month__mean",
+              "inq_inquiries__sum",
+              "inq_inquiries_in_last_3_months__sum",
+              "inq_inquiries_in_last_6_months__sum",
+              "inq_inquiries_in_last_9_months__sum",
+              "inq_inquiries_in_last_month__sum",
+              "inq_inquiries_in_last_year__sum",
+              "inq_months_since_INQUIRY_DATE__max",
+              "inq_months_since_INQUIRY_DATE__mean",
+              "inq_months_since_INQUIRY_DATE__min",
+              "inq_months_since_INQUIRY_DATE__sum",
+              "collec_blnc__sum",
+              "collec_months_since_collection_opened__min",
+              "collec___count",
+              "collec_ratio_paid__max",
+              "collec_ratio_paid__min",
+              "bnkr___count",
+              "bnkr___count_by_type_chapter_13_discharged",
+              "bnkr___count_by_type_chapter_13_dismissed",
+              "bnkr___count_by_type_chapter_7_discharged",
+              "bnkr___count_by_type_chapter_7_dismissed",
+              "bnkr_months_since_date_filed__max",
+              "bnkr_months_since_date_filed__mean",
+              "bnkr_months_since_date_filed__min",
+              "member_hcAmt_accts_never_dq__mean",
+              "member_hcAmt__max_by_prtfType_revolving",
+              "member_hcAmt__max_by_prtfType_installment",
+              "member_hcAmt__sum_by_prtfType_installment",
+              "member_hcAmt_accts_never_dq__max_by_prtfType_installment",
+              "member_hcAmt_accts_never_dq__max_by_prtfType_revolving",
+              "member_hcAmt_accts_opened_12m__sum_by_prtfType_installment",
+              "member_hcAmt_accts_opened_12m__sum_by_prtfType_revolving",
+              "member_hcAmt_active_accts__sum_by_prtfType_installment",
+              "member_hcAmt_active_accts__sum_by_prtfType_revolving",
+              "member_months_since_openDate__max_by_ecoa_individual",
+              "member_hcAmt_active_accts__mean_by_ecoa_individual",
+              "member_blnc_to_hc__max_by_prtfType_revolving",
+              "member_blnc_to_hc__max_by_prtfType_installment",
+              "member_blnc_to_hc_accts_never_dq__max_by_prtfType_revolving",
+              "member_blnc_to_hc_accts_never_dq__max_by_prtfType_installment",
+              "member_months_since_openDate__min",
+              "member_months_since_openDate__max",
+              "member_months_since_openDate__mean",
+              "member_number_DQ60_24_months__sum",
+              "member_number_DQ30_24_months__sum",
+              "member_number_DQ60_12_months__sum",
+              "member_number_DQ30_12_months__sum",
+              "member_number_CO_24_months__sum",
+              "member_acctType__count",
+              "member_blncAmt__sum_by_acctType_unsecure",
+              "member_blncAmt__sum_by_prtfType_revolving",
+              "member_blncAmt__sum_by_prtfType_installment"
+            ]
+          }
+        }
+      ],
+      "model": {
+        "zaml_class": "XGBoostModel",
+        "params": {
+          "n_estimators": 10000,
+          "learning_rate": 0.01,
+          "max_depth": 3,
+          "subsample": 0.5,
+          "scale_pos_weight": 2.5,
+          "colsample_bytree": 0.05,
+          "min_child_weight": 350,
+          "seed": 12,
+          "early_stopping_rounds": 200,
+          "eval_metric": "auc"
+        }
+      }
+    },
+    "bivariate_fe_instructions": [],
+    "monotonic_constraints_list": [
+        {
+            "feature": "client_data_LTV_NORM",
+            "monotonic_constraint": "positive"
+        }
+    ],
+    "exclusion_list": [],
+    "feature_definition_list": [
+        {
+        "feature": "client_data_LTV_NORM",
+        "definition": "Customer has either calculated the following feature(s) based on its internal policies, or provided Zest with the underlying data and logic to compute the features, and requested that Zest include it in the model: Customer has either calculated the following feature(s) based on its internal policies, or provided Zest with the underlying data and logic to compute the features, and requested that Zest include it in the model: Customer has either calculated the following feature(s) based on its internal policies, or provided Zest with the underlying data and logic to compute the features, and requested that Zest include it in the model: Customer has either calculated the following feature(s) based on its internal policies, or provided Zest with the underlying data and logic to compute the features, and requested that Zest include it in the model: Customer has either calculated the following feature(s) based on its internal policies, or provided Zest with the underlying data and logic to compute the features, and requested that Zest include it in the model: loan to value"
+      }
+    ],
+    "key_factor_mapping_list": [
+                      {
+        "feature": "client_data_LTV_NORM",
+        "key_factor": "Deal structure"
+      }
+    ],
+    "fold_valid": false,
+    "mandatory_features": [
+      "client_data_LTV_NORM", 
+      "trade_months_since_openDate__max",
+      "trade_acctType__count",
+      "trade_number_DQ30_24_months__sum",
+      "trade_number_DQ60_24_months__sum",
+      "trade_number_DQ90_24_months__sum",
+      "trade_blncAmt_all_derog_accts__max",
+      "trade_blncAmt_active_accts__sum",
+      "trade_blncAmt_active_accts__sum_by_prtfType_revolving",
+      "inq_inquiries__count_by_indCode_auto_mortgage",
+      "inq_inquiries__count_by_month__max",
+      "inq_inquiries__count_by_month__mean",
+      "inq_inquiries__sum",
+      "inq_inquiries_in_last_3_months__sum",
+      "inq_inquiries_in_last_6_months__sum",
+      "inq_inquiries_in_last_9_months__sum",
+      "inq_inquiries_in_last_month__sum",
+      "inq_inquiries_in_last_year__sum",
+      "inq_months_since_INQUIRY_DATE__max",
+      "inq_months_since_INQUIRY_DATE__mean",
+      "inq_months_since_INQUIRY_DATE__min",
+      "inq_months_since_INQUIRY_DATE__sum",
+      "collec_blnc__sum",
+      "collec_months_since_collection_opened__min",
+      "collec___count",
+      "collec_ratio_paid__max",
+      "collec_ratio_paid__min",
+      "bnkr___count",
+      "bnkr___count_by_type_chapter_13_discharged",
+      "bnkr___count_by_type_chapter_13_dismissed",
+      "bnkr___count_by_type_chapter_7_discharged",
+      "bnkr___count_by_type_chapter_7_dismissed",
+      "bnkr_months_since_date_filed__max",
+      "bnkr_months_since_date_filed__mean",
+      "bnkr_months_since_date_filed__min",
+      "member_hcAmt_accts_never_dq__mean",
+      "member_hcAmt__max_by_prtfType_revolving",
+      "member_hcAmt__max_by_prtfType_installment",
+      "member_hcAmt__sum_by_prtfType_installment",
+      "member_hcAmt_accts_never_dq__max_by_prtfType_installment",
+      "member_hcAmt_accts_never_dq__max_by_prtfType_revolving",
+      "member_hcAmt_accts_opened_12m__sum_by_prtfType_installment",
+      "member_hcAmt_accts_opened_12m__sum_by_prtfType_revolving",
+      "member_hcAmt_active_accts__sum_by_prtfType_installment",
+      "member_hcAmt_active_accts__sum_by_prtfType_revolving",
+      "member_months_since_openDate__max_by_ecoa_individual",
+      "member_hcAmt_active_accts__mean_by_ecoa_individual",
+      "member_blnc_to_hc__max_by_prtfType_revolving",
+      "member_blnc_to_hc__max_by_prtfType_installment",
+      "member_blnc_to_hc_accts_never_dq__max_by_prtfType_revolving",
+      "member_blnc_to_hc_accts_never_dq__max_by_prtfType_installment",
+      "member_months_since_openDate__min",
+      "member_months_since_openDate__max",
+      "member_months_since_openDate__mean",
+      "member_number_DQ60_24_months__sum",
+      "member_number_DQ30_24_months__sum",
+      "member_number_DQ60_12_months__sum",
+      "member_number_DQ30_12_months__sum",
+      "member_number_CO_24_months__sum",
+      "member_acctType__count",
+      "member_blncAmt__sum_by_acctType_unsecure",
+      "member_blncAmt__sum_by_prtfType_revolving",
+      "member_blncAmt__sum_by_prtfType_installment"
+    ]
+  }
+}
